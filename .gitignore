@@ -135,3 +135,4 @@ venv.bak/
 /web2client/db/online_db_config.py
 /web2client/db/test_db_config.py
 /web2client/config.py
+.idea/
