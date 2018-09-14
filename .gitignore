@@ -136,3 +136,4 @@ venv.bak/
 /web2client/db/test_db_config.py
 /web2client/config.py
 .idea/
+/web2client/auth.py
