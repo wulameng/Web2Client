@@ -27,8 +27,7 @@ def personSync(person_node):
     username = person_node.username
     nickname = person_node.nickname
     alias = person_node.alias
-    createtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    updatetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    updatetime, createtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     count = PersonModel.select().where(PersonModel.username == username).count()
 
