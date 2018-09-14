@@ -3,17 +3,8 @@ from flask_restful import Resource
 
 from web2client.auth import auth
 from web2client.model.GroupSync import *
-from web2client.model.PersonSync import PersonModel, personSync
-
-
-class MessageFromClient(Resource):
-    decorators = [auth.login_required]
-
-    def post(self):
-        pass
-
-    def get(self):
-        pass
+from web2client.model.MessageSync import *
+from web2client.model.PersonSync import *
 
 
 class GroupSyncFromClientAPI(Resource):
@@ -51,7 +42,7 @@ class PersonSyncApi(Resource):
         data_len = len(json_data)
         print(data_len)
         if json_data is None:
-            return {"failed":"post is failed "},-1
+            return {"failed": "post is failed "}, -1
         else:
             for data in json_data:
                 with PersonModel(username=data.get('username'),
@@ -59,3 +50,25 @@ class PersonSyncApi(Resource):
                                  alias=data.get('alias')) as person_node:
                     personSync(person_node)
             return {"success": "person sync success"}
+
+
+class MessageSyncApi(Resource):
+    decorators = [auth.login_required]
+
+    def post(self):
+        r = request
+        json_data = json.loads(r.data.decode('utf-8'))
+        data_len = len(json_data)
+        print(data_len)
+        if json_data is None:
+            return {"failed": "Message Sync failed"}, -1
+        else:
+            for data in json_data:
+                with MessageModel(msgid=data.get('msgid'),
+                                  type=data.get('type'),
+                                  takler=data.get('takler'),
+                                  createtime=data.get('createtime'),
+                                  content=data.get('content'),
+                                  imagepath=data.get('imagepath')) as message_node:
+                    MessageSync(message_node)
+            return {"success": "message has been inserted"}

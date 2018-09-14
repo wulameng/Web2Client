@@ -11,7 +11,7 @@ app.register_blueprint(chat_blue, url_prefix='/chat')
 from web2client import view
 
 api = Api(app)
-api.add_resource(MessageFromClient, '/postMessage', endpoint='postMessage')
+api.add_resource(MessageSyncApi, '/postMessage', endpoint='postMessage')
 api.add_resource(GroupSyncFromClientAPI, '/postGroup', endpoint='postGroup')
 api.add_resource(PersonSyncApi, '/postPerson', endpoint='postPerson')
 
