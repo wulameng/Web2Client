@@ -100,9 +100,19 @@ class SyncChatApi(Resource):
 
 
 class SendMessageApi(Resource):
+    content = ''
+    to_user = ''
+
     def post(self):
-        # r = request
-        # json_data = json.loads(r.data.decode('utf-8'))
-        # data_len = len(json_data)
-        # print(data_len)
-        JPushCreate()
+        r = request
+        json_data = json.loads(r.data.decode('utf-8'))
+        data_len = len(json_data)
+        print(data_len)
+
+        self.content = json_data.get('content')
+        self.to_user = json_data.get('toUser')
+        if self.content is not None and self.to_user is not None:
+            JPushCreate().sendMessage(command='text', content=self.content, toUser=self.to_user)
+            return {'rest_desc': 'success', 'rest_code': 200}, 200
+        else:
+            return {'rest_desc': 'content or toUser is None', 'rest_code': -1}, -1

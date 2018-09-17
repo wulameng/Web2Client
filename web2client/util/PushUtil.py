@@ -6,20 +6,13 @@ _jpush = jpush.JPush(APP_KEY, MASTER_SECRET)
 _jpush.set_logging(True)
 
 
-# PUSH_MODEL = {
-#     'command':
-# }
-
 class JPushCreate(object):
 
     def sendMessage(self, command='text', **kwargs):
         push = _jpush.create_push()
         push.audience = jpush.all_
+        push.message = jpush.message(command,
+                                     extras={'content': kwargs.get('content'), 'toUser': kwargs.get('to_user')})
 
-        if command == 'text':
-            push.message = jpush.message(command,
-                                         extras={'content': kwargs.get('content'), 'toUser': kwargs.get('toUser')})
-        else:
-            push.message = jpush.message(command, extras={'k2': 'v2', 'k3': 'v3'})
         push.platform = jpush.platform('android')
         push.send()
