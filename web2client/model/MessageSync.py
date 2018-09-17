@@ -30,7 +30,7 @@ def MessageSync(message_node):
     createtime = message_node.createtime
     content = message_node.content
     imagepath = message_node.imagepath
-    MessageModel.insert(msgid=msgid,type=type,
+    MessageModel.insert(msgid=msgid, type=type,
                         takler=takler,
                         createtime=createtime,
                         content=content,

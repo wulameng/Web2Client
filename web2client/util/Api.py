@@ -1,10 +1,11 @@
 from flask import *
-from flask_restful import Resource
+from flask_restful import fields, Resource, marshal, marshal_with
 
 from web2client.auth import auth
 from web2client.model.GroupSync import *
 from web2client.model.MessageSync import *
 from web2client.model.PersonSync import *
+from web2client.model.NormalResponse import *
 
 
 class GroupSyncFromClientAPI(Resource):
@@ -72,3 +73,13 @@ class MessageSyncApi(Resource):
                                   imagepath=data.get('imagepath')) as message_node:
                     MessageSync(message_node)
             return {"success": "message has been inserted"}
+
+
+# web 获取所有的会话列表
+class SyncChatApi(Resource):
+
+    @marshal_with(fields=NORMAL_RESPONSE)
+    def get(self):
+        user = ['wdwdwd', 'wdwdwdwd', 12312312412]
+        # data = {'rest_desc': 'success', 'rest_code': '200', 'user': ['wx_id', 'asd', 123123]}
+        return UserList(rest_code=200, rest_desc='success', user=user)
