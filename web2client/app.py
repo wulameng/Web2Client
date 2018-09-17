@@ -14,7 +14,7 @@ api = Api(app)
 api.add_resource(MessageSyncApi, '/postMessage', endpoint='postMessage')
 api.add_resource(GroupSyncFromClientAPI, '/postGroup', endpoint='postGroup')
 api.add_resource(PersonSyncApi, '/postPerson', endpoint='postPerson')
-api.add_resource(SyncChatApi, '/getChat', endpoint='getChat')
+api.add_resource(SyncContactApi, '/getContact', endpoint='getContact')
 
 
 @app.before_request

@@ -1,5 +1,5 @@
 from flask import *
-from flask_restful import fields, Resource, marshal, marshal_with
+from flask_restful import Resource, marshal_with
 
 from web2client.auth import auth
 from web2client.model.GroupSync import *
@@ -76,10 +76,23 @@ class MessageSyncApi(Resource):
 
 
 # web 获取所有的会话列表
-class SyncChatApi(Resource):
+class SyncContactApi(Resource):
+    user_list = []
 
     @marshal_with(fields=NORMAL_RESPONSE)
     def get(self):
-        user = ['wdwdwd', 'wdwdwdwd', 12312312412]
-        # data = {'rest_desc': 'success', 'rest_code': '200', 'user': ['wx_id', 'asd', 123123]}
-        return UserList(rest_code=200, rest_desc='success', user=user)
+        query = PersonModel.select(PersonModel.username, PersonModel.nickname,
+                                   PersonModel.updatetime).order_by(PersonModel.updatetime.desc()).limit(20)
+        for cursor in query:
+            self.user_list.append(
+                User(nick_name=cursor.username, wx_id=cursor.username,
+                     last_message_time=cursor.updatetime))
+        if len(self.user_list) == 0:
+            return UserList(rest_code=-1, rest_desc='failed', user=None)
+        else:
+            return UserList(rest_code=200, rest_desc='success', user=self.user_list)
+
+#
+# class SyncAllChat(Resource):
+#     def get(self):
+#
