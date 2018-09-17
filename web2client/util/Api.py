@@ -6,6 +6,7 @@ from web2client.model.GroupSync import *
 from web2client.model.MessageSync import *
 from web2client.model.PersonSync import *
 from web2client.model.NormalResponse import *
+from web2client.util.PushUtil import JPushCreate
 
 
 class GroupSyncFromClientAPI(Resource):
@@ -92,7 +93,16 @@ class SyncContactApi(Resource):
         else:
             return UserList(rest_code=200, rest_desc='success', user=self.user_list)
 
-#
-# class SyncAllChat(Resource):
-#     def get(self):
-#
+
+class SyncChatApi(Resource):
+    def get(self):
+        pass
+
+
+class SendMessageApi(Resource):
+    def post(self):
+        # r = request
+        # json_data = json.loads(r.data.decode('utf-8'))
+        # data_len = len(json_data)
+        # print(data_len)
+        JPushCreate()
