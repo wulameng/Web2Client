@@ -12,10 +12,11 @@ from web2client import view
 
 api = Api(app)
 api.add_resource(MessageSyncApi, '/postMessage', endpoint='postMessage')
-api.add_resource(GroupSyncFromClientAPI, '/postGroup', endpoint='postGroup')
+api.add_resource(GroupSyncFromClientApi, '/postGroup', endpoint='postGroup')
 api.add_resource(PersonSyncApi, '/postPerson', endpoint='postPerson')
 api.add_resource(SyncContactApi, '/getContact', endpoint='getContact')
 api.add_resource(SendMessageApi, '/sendMessage', endpoint='sendMessage')
+api.add_resource(SyncChatApi, '/syncchat', endpoint='syncchat')
 
 
 @app.before_request

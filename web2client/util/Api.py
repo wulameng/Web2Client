@@ -1,15 +1,17 @@
+import threading
+
 from flask import *
 from flask_restful import Resource, marshal_with
-
 from web2client.auth import auth
 from web2client.model.GroupSync import *
 from web2client.model.MessageSync import *
 from web2client.model.PersonSync import *
 from web2client.model.NormalResponse import *
 from web2client.util.PushUtil import JPushCreate
+from web2client.util.IMessage import *
 
 
-class GroupSyncFromClientAPI(Resource):
+class GroupSyncFromClientApi(Resource):
     result = False
     decorators = [auth.login_required]
 
@@ -54,8 +56,23 @@ class PersonSyncApi(Resource):
             return {"success": "person sync success"}
 
 
-class MessageSyncApi(Resource):
+class MessageSyncApi(Resource, IMessage):
     decorators = [auth.login_required]
+    new_message_list = []
+    obs = []
+
+    def attach(self, ob):
+        if ob not in self.obs:
+            self.obs.append(ob)
+
+    def detach(self, ob):
+        if ob in self.obs:
+            self.obs.remove(ob)
+
+    def notify(self, *args):
+        print('two')
+        for ob in self.obs:
+            ob.update(args)
 
     def post(self):
         r = request
@@ -73,11 +90,18 @@ class MessageSyncApi(Resource):
                                   content=data.get('content'),
                                   imagepath=data.get('imagepath')) as message_node:
                     MessageSync(message_node)
-            return {"success": "message has been inserted"}
+                    new_message = NewMessageModel(content=message_node.content, message_time=message_node.createtime,
+                                                  talker=message_node.takler, to_user='',
+                                                  message_type=message_node.type)
+                    self.new_message_list.append(new_message)
+            print('one')
+            self.notify(self.new_message_list)
+            return {"rest_code": 200, "rest_desc": "message has been inserted"}, 200
 
 
 # web 获取所有的会话列表
 class SyncContactApi(Resource):
+    decorators = [auth.login_required]
     user_list = []
 
     @marshal_with(fields=NORMAL_RESPONSE)
@@ -94,12 +118,35 @@ class SyncContactApi(Resource):
             return UserList(rest_code=200, rest_desc='success', user=self.user_list)
 
 
-class SyncChatApi(Resource):
-    def get(self):
-        pass
+# last api
+class SyncChatApi(Resource, Observer):
+    decorators = [auth.login_required]
+    condition = threading.Condition()
+
+    def __init__(self):
+        MessageSyncApi().attach(self)
+
+    def update(self, *args):
+        print('three')
+        print('three de len %d', len(args))
+        return self.get(args)
+
+    def get(self, *args):
+        self.condition.acquire(False)
+        if len(args) == 0:
+            # time.sleep(25)
+            self.condition.wait(25)
+            print('time sleep %d', (len(args)))
+            return {'rest_code': -1, 'rest_desc': 'xxxxxxxxxxxxxx'}, -1
+        else:
+            self.condition.notify()
+            self.condition.release()
+            print('get de len %d', len(args))
+            return {'rest_code': 200, 'rest_desc': 'success', 'newMessage': 'newenwenw'}, 200
 
 
 class SendMessageApi(Resource):
+    decorators = [auth.login_required]
     content = ''
     to_user = ''
 
