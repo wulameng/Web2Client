@@ -69,10 +69,9 @@ class MessageSyncApi(Resource, IMessage):
         if ob in self.obs:
             self.obs.remove(ob)
 
-    def notify(self, *args):
-        print('two')
+    def notify(self, list):
         for ob in self.obs:
-            ob.update(args)
+            ob.update(list)
 
     def post(self):
         r = request
@@ -90,12 +89,11 @@ class MessageSyncApi(Resource, IMessage):
                                   content=data.get('content'),
                                   imagepath=data.get('imagepath')) as message_node:
                     MessageSync(message_node)
-                    new_message = NewMessageModel(content=message_node.content, message_time=message_node.createtime,
-                                                  talker=message_node.takler, to_user='',
-                                                  message_type=message_node.type)
+                    new_message = Message(content=message_node.content, message_time=message_node.createtime,
+                                          talker=message_node.takler, to_user='',
+                                          message_type=message_node.type)
                     self.new_message_list.append(new_message)
-            print('one')
-            self.notify(self.new_message_list)
+            self.notify(list=self.new_message_list)
             return {"rest_code": 200, "rest_desc": "message has been inserted"}, 200
 
 
@@ -122,27 +120,28 @@ class SyncContactApi(Resource):
 class SyncChatApi(Resource, Observer):
     decorators = [auth.login_required]
     condition = threading.Condition()
+    arg_list = []
 
     def __init__(self):
         MessageSyncApi().attach(self)
 
-    def update(self, *args):
-        print('three')
-        print('three de len %d', len(args))
-        return self.get(args)
+    def update(self, list):
+        self.arg_list = list
+        self.condition.acquire()
+        self.condition.notifyAll()
+        self.condition.release()
+        return
 
-    def get(self, *args):
-        self.condition.acquire(False)
-        if len(args) == 0:
-            # time.sleep(25)
-            self.condition.wait(25)
-            print('time sleep %d', (len(args)))
-            return {'rest_code': -1, 'rest_desc': 'xxxxxxxxxxxxxx'}, -1
+    @marshal_with(fields=MESSAGE_RESPONSE)
+    def get(self):
+        self.condition.acquire()
+        self.condition.wait(25)
+        if len(self.arg_list) == 0:
+            return MessageList(rest_desc='stop thread', rest_code=-1)
         else:
-            self.condition.notify()
-            self.condition.release()
-            print('get de len %d', len(args))
-            return {'rest_code': 200, 'rest_desc': 'success', 'newMessage': 'newenwenw'}, 200
+            # json_data = json.dumps(self.arg_list, default=NEW_MESSAGE)
+            # print(json_data)
+            return MessageList(rest_code=200, rest_desc='success', message=self.arg_list)
 
 
 class SendMessageApi(Resource):

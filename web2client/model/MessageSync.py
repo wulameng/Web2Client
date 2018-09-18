@@ -37,10 +37,4 @@ def MessageSync(message_node):
                         imagepath=imagepath).execute()
 
 
-class NewMessageModel(object):
-    def __init__(self, content, message_time, talker, to_user, message_type):
-        self.content = content
-        self.message_type = message_type
-        self.message_time = message_time
-        self.to_user = to_user
-        self.talker = talker
+

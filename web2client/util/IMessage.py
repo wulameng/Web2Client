@@ -13,7 +13,7 @@ class IMessage(object):
         raise NotImplementedError
 
     @abstractmethod
-    def notify(self, *args):
+    def notify(self, list):
         raise NotImplementedError
 
 
@@ -21,5 +21,5 @@ class Observer(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def update(self, *args):
+    def update(self, list):
         raise NotImplementedError
