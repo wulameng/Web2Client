@@ -6,7 +6,7 @@ class MessageModel(WXBaseModel):
     msgid = BigIntegerField()
     type = IntegerField()
     takler = CharField()
-    createtime = DateTimeField()
+    createtime = BigIntegerField()
     content = CharField()
     imagepath = CharField()
 

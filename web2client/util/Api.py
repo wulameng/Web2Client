@@ -81,20 +81,19 @@ class MessageSyncApi(Resource, IMessage):
         if json_data is None:
             return {"failed": "Message Sync failed"}, -1
         else:
-            for data in json_data:
-                with MessageModel(msgid=data.get('msgid'),
-                                  type=data.get('type'),
-                                  takler=data.get('takler'),
-                                  createtime=data.get('createtime'),
-                                  content=data.get('content'),
-                                  imagepath=data.get('imagepath')) as message_node:
-                    MessageSync(message_node)
-                    new_message = Message(content=message_node.content, message_time=message_node.createtime,
-                                          talker=message_node.takler, to_user='',
-                                          message_type=message_node.type)
-                    self.new_message_list.append(new_message)
-            self.notify(list=self.new_message_list)
-            return {"rest_code": 200, "rest_desc": "message has been inserted"}, 200
+            with MessageModel(msgid=json_data.get('msgId'),
+                              type=json_data.get('type'),
+                              takler=json_data.get('sender'),
+                              createtime=json_data.get('createTime'),
+                              content=json_data.get('content'),
+                              imagepath=json_data.get('imagepath')) as message_node:
+                MessageSync(message_node)
+                new_message = Message(content=message_node.content, message_time=message_node.createtime,
+                                      talker=message_node.takler, to_user='',
+                                      message_type=message_node.type)
+                self.new_message_list.append(new_message)
+        self.notify(list=self.new_message_list)
+        return {"rest_code": 200, "rest_desc": "message has been inserted"}, 200
 
 
 # web 获取所有的会话列表
@@ -139,8 +138,6 @@ class SyncChatApi(Resource, Observer):
         if len(self.arg_list) == 0:
             return MessageList(rest_desc='stop thread', rest_code=-1)
         else:
-            # json_data = json.dumps(self.arg_list, default=NEW_MESSAGE)
-            # print(json_data)
             return MessageList(rest_code=200, rest_desc='success', message=self.arg_list)
 
 
