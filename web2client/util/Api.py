@@ -58,8 +58,11 @@ class PersonSyncApi(Resource):
 
 class MessageSyncApi(Resource, IMessage):
     decorators = [auth.login_required]
-    new_message_list = []
+
     obs = []
+
+    def __init__(self):
+        self.new_message_list = []
 
     def attach(self, ob):
         if ob not in self.obs:

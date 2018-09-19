@@ -1,5 +1,5 @@
 from web2client.db.BaseModel import WXBaseModel
-from peewee import CharField, BigIntegerField, IntegerField, DateTimeField
+from peewee import CharField, BigIntegerField, IntegerField, TextField
 
 
 class MessageModel(WXBaseModel):
@@ -7,7 +7,7 @@ class MessageModel(WXBaseModel):
     type = IntegerField()
     takler = CharField()
     createtime = BigIntegerField()
-    content = CharField()
+    content = TextField()
     imagepath = CharField()
 
     def __enter__(self):
